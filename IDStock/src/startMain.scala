@@ -2,36 +2,23 @@ import play.api.libs.json._
 
 object startMain {
 
+  var token = "pk_1e367983fe2f4475b05f0cfbf33756a3"
+
   def main(args: Array[String]): Unit = {
-    var token = "pk_1e367983fe2f4475b05f0cfbf33756a3"
-    var webadd = "https://cloud.iexapis.com/beta/ref-data/symbols?token=YOUR_TOKEN_HERE"
 
     try {
-      println("Getting Web Json")
-      var returnTxt = get(webadd.replace("YOUR_TOKEN_HERE", token))
-      //      var returnTxt = getText2()
-      
-      println("Parsing Json to List")
-      //https://stackoverflow.com/questions/51680206/parse-json-array-in-scala
-      val jsonList: List[JsValue] = Json.parse(returnTxt).as[List[JsValue]]
-      
-      println("Looping List")
-      for (acct <- jsonList) {
-        //Remove quote from name
-        var name: String = acct("name").as[String].replace("'", "")
-        //Convert boolean to string
-        var isEnabled: String = if (acct("isEnabled").as[Boolean])
-          "true"
-        else
-          "false"
-          
-        val paraList: List[String] = List(acct("symbol").as[String], acct("exchange").as[String], name, acct("date").as[String], acct("type").as[String], acct("iexId").as[String], acct("region").as[String], acct("currency").as[String], isEnabled, "U")
-        //        testListst(paraList)
-        DataConnector.connectionClass_GenericSP("addupdatedeletesm", paraList)
 
-      }
-
-      println("Completed")
+      println("Update SecurityMaster")
+      UpdateSecurityMaster();
+      println("SecurityMaster Updated Completed")
+      
+      println("Update SecurityMaster OTC")
+      UpdateSecurityMasterOTC();
+      println("SecurityMaster OTC Updated Completed")
+      
+      println("Update ExchangeMaster")
+      UpdateExchangeMaster();
+      println("ExchangeMaster Updated Completed")
 
     } catch {
       case ioe: java.io.IOException             => prt("IO Exception")
@@ -41,261 +28,80 @@ object startMain {
 
   }
 
-  def testListst(paraList: List[String]) {
-    //    var arrlist: List[String] = List("a", "b", "true")
-    var parameterstr = StringBuilder.newBuilder;
-    for (par <- paraList) {
-      if (par == "true" || par == "false")
-        parameterstr.append("" + par + "" + ",")
-      else
-        parameterstr.append("'" + par + "'" + ",")
+  def UpdateExchangeMaster() {
+    var webstr = "https://cloud.iexapis.com/beta/ref-data/exchanges?token=YOUR_TOKEN_HERE"
+
+    var returnTxt = get(webstr.replace("YOUR_TOKEN_HERE", token))
+    //      var returnTxt = getText2()
+
+    println("Parsing Json to List")
+    //https://stackoverflow.com/questions/51680206/parse-json-array-in-scala
+    val jsonList: List[JsValue] = Json.parse(returnTxt).as[List[JsValue]]
+
+    println("Looping List")
+    for (acct <- jsonList) {
+      val paraList: List[String] = List(acct("exchange").as[String], acct("region").as[String], acct("description").as[String], "U")
+      //        testListst(paraList)
+      DataConnector.connectionClass_GenericSP("addupdatedeleteem", paraList)
+
     }
+  }
+  
+  def UpdateSecurityMasterOTC() {
+    println("Getting Web Json")
+    var webstr = "https://cloud.iexapis.com/beta/ref-data/otc/symbols?token=YOUR_TOKEN_HERE"
 
-    var strLen = parameterstr.length
+    var returnTxt = get(webstr.replace("YOUR_TOKEN_HERE", token))
+    //      var returnTxt = getText2()
 
-    val result = parameterstr.substring(0, strLen - 1)
+    println("Parsing Json to List")
+    //https://stackoverflow.com/questions/51680206/parse-json-array-in-scala
+    val jsonList: List[JsValue] = Json.parse(returnTxt).as[List[JsValue]]
 
-    val sql = """SELECT public."""" + "addupdatedeletesm" + """"(""" + result + ");"
-    println(sql)
+    println("Looping List")
+    for (acct <- jsonList) {
+      //Remove quote from name
+      var name: String = acct("name").as[String].replace("'", "")
+      //Convert boolean to string
+      var isEnabled: String = if (acct("isEnabled").as[Boolean])
+        "true"
+      else
+        "false"
+
+      val paraList: List[String] = List(acct("symbol").as[String], acct("exchange").as[String], name, acct("date").as[String], acct("type").as[String], acct("iexId").as[String], acct("region").as[String], acct("currency").as[String], isEnabled, "U")
+      //        testListst(paraList)
+      DataConnector.connectionClass_GenericSP("addupdatedeletesm", paraList)
+
+    }
   }
 
-  def getText2(): String = {
-    return """[
-    {
-        "symbol": "A",
-        "exchange": "NYS",
-        "name": "Agilent Technologies Inc.",
-        "date": "2019-04-20",
-        "type": "cs",
-        "iexId": "IEX_46574843354B2D52",
-        "region": "US",
-        "currency": "USD",
-        "isEnabled": true
-    },
-    {
-        "symbol": "AA",
-        "exchange": "NYS",
-        "name": "Alcoa Corp.",
-        "date": "2019-04-20",
-        "type": "cs",
-        "iexId": "IEX_4238333734532D52",
-        "region": "US",
-        "currency": "USD",
-        "isEnabled": true
-    },
-    {
-        "symbol": "AAAU",
-        "exchange": "PSE",
-        "name": "Perth Mint Physical Gold ETF",
-        "date": "2019-04-20",
-        "type": "et",
-        "iexId": "IEX_474B433136332D52",
-        "region": "US",
-        "currency": "USD",
-        "isEnabled": true
-    },
-    {
-        "symbol": "AABA",
-        "exchange": "NAS",
-        "name": "Altaba Inc.",
-        "date": "2019-04-20",
-        "type": "cef",
-        "iexId": "IEX_4E5434354A302D52",
-        "region": "US",
-        "currency": "USD",
-        "isEnabled": true
-    },
-    {
-        "symbol": "AAC",
-        "exchange": "NYS",
-        "name": "AAC Holdings Inc.",
-        "date": "2019-04-20",
-        "type": "cs",
-        "iexId": "IEX_4843364642592D52",
-        "region": "US",
-        "currency": "USD",
-        "isEnabled": true
-    },
-    {
-        "symbol": "AADR",
-        "exchange": "PSE",
-        "name": "AdvisorShares Dorsey Wright ADR ETF",
-        "date": "2019-04-20",
-        "type": "et",
-        "iexId": "IEX_5253355435362D52",
-        "region": "US",
-        "currency": "USD",
-        "isEnabled": true
-    },
-    {
-        "symbol": "AAL",
-        "exchange": "NAS",
-        "name": "American Airlines Group Inc.",
-        "date": "2019-04-20",
-        "type": "cs",
-        "iexId": "IEX_4353464A535A2D52",
-        "region": "US",
-        "currency": "USD",
-        "isEnabled": true
-    },
-    {
-        "symbol": "AAMC",
-        "exchange": "ASE",
-        "name": "Altisource Asset Management Corp.",
-        "date": "2019-04-20",
-        "type": "cs",
-        "iexId": "IEX_5442323844432D52",
-        "region": "US",
-        "currency": "USD",
-        "isEnabled": true
-    },
-    {
-        "symbol": "AAME",
-        "exchange": "NAS",
-        "name": "Atlantic American Corporation",
-        "date": "2019-04-20",
-        "type": "cs",
-        "iexId": "IEX_5737584C53442D52",
-        "region": "US",
-        "currency": "USD",
-        "isEnabled": true
-    },
-    {
-        "symbol": "AAN",
-        "exchange": "NYS",
-        "name": "Aaron's Inc.",
-        "date": "2019-04-20",
-        "type": "cs",
-        "iexId": "IEX_534D305A30592D52",
-        "region": "US",
-        "currency": "USD",
-        "isEnabled": true
-    }]"""
-  }
-  def getText(): String = {
-    return """[
-                {
-                    "mic": "ARCX",
-                    "name": "NYSE Arca",
-                    "longName": "NYSE ARCA",
-                    "tapeId": "P",
-                    "oatsId": "XP",
-                    "type": "equities"
-                },
-                {
-                    "mic": "EDGX",
-                    "name": "Cboe EDGX",
-                    "longName": "Cboe EDGX US Equities Exchange",
-                    "tapeId": "K",
-                    "oatsId": "XK",
-                    "type": "equities"
-                },
-                {
-                    "mic": "BATS",
-                    "name": "Cboe BZX",
-                    "longName": "Cboe BZX US Equities Exchange",
-                    "tapeId": "Z",
-                    "oatsId": "XZ",
-                    "type": "equities"
-                },
-                {
-                    "mic": "BATY",
-                    "name": "Cboe BYX",
-                    "longName": "Cboe BYX US Equities Exchange",
-                    "tapeId": "Y",
-                    "oatsId": "XY",
-                    "type": "equities"
-                },
-                {
-                    "mic": "EDGA",
-                    "name": "Cboe EDGA",
-                    "longName": "Cboe EDGA US Equities Exchange",
-                    "tapeId": "J",
-                    "oatsId": "XJ",
-                    "type": "equities"
-                },
-                {
-                    "mic": "IEXG",
-                    "name": "IEX",
-                    "longName": "Investors Exchange",
-                    "tapeId": "V",
-                    "oatsId": "XV",
-                    "type": "equities"
-                },
-                {
-                    "mic": "XBOS",
-                    "name": "Nasdaq OMX BX",
-                    "longName": "Nasdaq OMX BX",
-                    "tapeId": "B",
-                    "oatsId": "XB",
-                    "type": "equities"
-                },
-                {
-                    "mic": "XPHL",
-                    "name": "Nasdaq OMX PHLX",
-                    "longName": "Nasdaq OMX PHLX",
-                    "tapeId": "X",
-                    "oatsId": "XX",
-                    "type": "equities"
-                },
-                {
-                    "mic": "XCHI",
-                    "name": "NYSE Chicago",
-                    "longName": "NYSE Chicago",
-                    "tapeId": "M",
-                    "oatsId": "XM",
-                    "type": "equities"
-                },
-                {
-                    "mic": "XASE",
-                    "name": "NYSE American",
-                    "longName": "NYSE American",
-                    "tapeId": "A",
-                    "oatsId": "XA",
-                    "type": "equities"
-                },
-                {
-                    "mic": "XCIS",
-                    "name": "NYSE National",
-                    "longName": "NYSE National",
-                    "tapeId": "C",
-                    "oatsId": "XC",
-                    "type": "equities"
-                },
-                {
-                    "mic": "XNYS",
-                    "name": "NYSE",
-                    "longName": "New York Stock Exchange",
-                    "tapeId": "N",
-                    "oatsId": "XN",
-                    "type": "equities"
-                },
-                {
-                    "mic": "XNGS",
-                    "name": "Nasdaq",
-                    "longName": "Nasdaq",
-                    "tapeId": "T",
-                    "oatsId": "XQ",
-                    "type": "equities"
-                },
-                {
-                    "mic": "OTCM",
-                    "name": "US OTC",
-                    "longName": "OTC Markets",
-                    "tapeId": "",
-                    "oatsId": "",
-                    "type": "otc"
-                },
-                {
-                    "mic": "TRF",
-                    "name": "Off Exchange",
-                    "tapeId": "",
-                    "oatsId": "",
-                    "type": "equities"
-                }
-            ]"""
-  }
+  def UpdateSecurityMaster() {
+    println("Getting Web Json")
+    var webstr = "https://cloud.iexapis.com/beta/ref-data/symbols?token=YOUR_TOKEN_HERE"
 
+    var returnTxt = get(webstr.replace("YOUR_TOKEN_HERE", token))
+    //      var returnTxt = getText2()
+
+    println("Parsing Json to List")
+    //https://stackoverflow.com/questions/51680206/parse-json-array-in-scala
+    val jsonList: List[JsValue] = Json.parse(returnTxt).as[List[JsValue]]
+
+    println("Looping List")
+    for (acct <- jsonList) {
+      //Remove quote from name
+      var name: String = acct("name").as[String].replace("'", "")
+      //Convert boolean to string
+      var isEnabled: String = if (acct("isEnabled").as[Boolean])
+        "true"
+      else
+        "false"
+
+      val paraList: List[String] = List(acct("symbol").as[String], acct("exchange").as[String], name, acct("date").as[String], acct("type").as[String], acct("iexId").as[String], acct("region").as[String], acct("currency").as[String], isEnabled, "U")
+      //        testListst(paraList)
+      DataConnector.connectionClass_GenericSP("addupdatedeletesm", paraList)
+
+    }
+  }
   def prt(str: String): Unit = {
     println(str) // Hello, James
   }
