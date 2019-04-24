@@ -1,5 +1,5 @@
 
-
+//https://stackoverflow.com/questions/51680206/parse-json-array-in-scala
 object TestFunction {
     def testListst(paraname: String ,paraList: List[String]) {
     //    var arrlist: List[String] = List("a", "b", "true")

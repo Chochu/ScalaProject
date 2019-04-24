@@ -7,18 +7,12 @@ object startMain {
   def main(args: Array[String]): Unit = {
 
     try {
-
-      println("Update SecurityMaster")
-      UpdateSecurityMaster();
-      println("SecurityMaster Updated Completed")
-      
-      println("Update SecurityMaster OTC")
-      UpdateSecurityMasterOTC();
-      println("SecurityMaster OTC Updated Completed")
-      
-      println("Update ExchangeMaster")
-      UpdateExchangeMaster();
-      println("ExchangeMaster Updated Completed")
+      println("Launch SecurityMaster")
+      ExecUpdateFunc(UpdateSecurityMaster)
+      println("Launch SecurityMaster OTC")
+      ExecUpdateFunc(UpdateSecurityMasterOTC)
+      println("Launch Exchange Master")
+      ExecUpdateFunc(UpdateExchangeMaster)
 
     } catch {
       case ioe: java.io.IOException             => prt("IO Exception")
@@ -27,80 +21,92 @@ object startMain {
     }
 
   }
+  
+  //Execute func as a Thread
+  def ExecUpdateFunc(callback:() => Unit){
+   new Thread(new Runnable{
+        def run{
+          callback()
+        }
+      }).start()
+  }
+  
 
   def UpdateExchangeMaster() {
     var webstr = "https://cloud.iexapis.com/beta/ref-data/exchanges?token=YOUR_TOKEN_HERE"
 
     var returnTxt = get(webstr.replace("YOUR_TOKEN_HERE", token))
-    //      var returnTxt = getText2()
 
-    println("Parsing Json to List")
-    //https://stackoverflow.com/questions/51680206/parse-json-array-in-scala
+    println("UpdateExchangeMaster: Parsing Json to List")
+   
     val jsonList: List[JsValue] = Json.parse(returnTxt).as[List[JsValue]]
 
-    println("Looping List")
+    println("UpdateExchangeMaster: Looping List")
     for (acct <- jsonList) {
-      val paraList: List[String] = List(acct("exchange").as[String], acct("region").as[String], acct("description").as[String], "U")
-      //        testListst(paraList)
+      val paraList: List[String] = List(acct("exchange").as[String], 
+                                        acct("region").as[String], 
+                                        acct("description").as[String], 
+                                        "U")
+     
       DataConnector.connectionClass_GenericSP("addupdatedeleteem", paraList)
 
     }
+    println("UpdateExchangeMaster: Function Completed")
   }
   
   def UpdateSecurityMasterOTC() {
-    println("Getting Web Json")
+    println("UpdateSecurityMasterOTC: Getting Web Json")
     var webstr = "https://cloud.iexapis.com/beta/ref-data/otc/symbols?token=YOUR_TOKEN_HERE"
 
     var returnTxt = get(webstr.replace("YOUR_TOKEN_HERE", token))
-    //      var returnTxt = getText2()
 
-    println("Parsing Json to List")
-    //https://stackoverflow.com/questions/51680206/parse-json-array-in-scala
+    println("UpdateSecurityMasterOTC: Parsing Json to List")
+    
     val jsonList: List[JsValue] = Json.parse(returnTxt).as[List[JsValue]]
 
-    println("Looping List")
-    for (acct <- jsonList) {
-      //Remove quote from name
-      var name: String = acct("name").as[String].replace("'", "")
-      //Convert boolean to string
-      var isEnabled: String = if (acct("isEnabled").as[Boolean])
-        "true"
-      else
-        "false"
-
-      val paraList: List[String] = List(acct("symbol").as[String], acct("exchange").as[String], name, acct("date").as[String], acct("type").as[String], acct("iexId").as[String], acct("region").as[String], acct("currency").as[String], isEnabled, "U")
-      //        testListst(paraList)
+    println("UpdateSecurityMasterOTC: Looping List")
+    for (acct <- jsonList) {      
+      val paraList: List[String] = List(acct("symbol").as[String], 
+                                        acct("exchange").as[String], 
+                                        HelperClass.removeSingleQuote(acct("name").as[String]), 
+                                        acct("date").as[String], 
+                                        acct("type").as[String], 
+                                        acct("iexId").as[String], 
+                                        acct("region").as[String], 
+                                        acct("currency").as[String], 
+                                        HelperClass.StringifyBoolean(acct("isEnabled").as[Boolean]), 
+                                        "U")
+                                        
       DataConnector.connectionClass_GenericSP("addupdatedeletesm", paraList)
-
     }
+    println("UpdateSecurityMasterOTC: Function Completed")
   }
 
   def UpdateSecurityMaster() {
-    println("Getting Web Json")
+    println("UpdateSecurityMaster: Getting Web Json")
     var webstr = "https://cloud.iexapis.com/beta/ref-data/symbols?token=YOUR_TOKEN_HERE"
 
     var returnTxt = get(webstr.replace("YOUR_TOKEN_HERE", token))
-    //      var returnTxt = getText2()
 
-    println("Parsing Json to List")
-    //https://stackoverflow.com/questions/51680206/parse-json-array-in-scala
+    println("UpdateSecurityMaster: Parsing Json to List")   
     val jsonList: List[JsValue] = Json.parse(returnTxt).as[List[JsValue]]
 
-    println("Looping List")
+    println("UpdateSecurityMaster: Looping List")
     for (acct <- jsonList) {
-      //Remove quote from name
-      var name: String = acct("name").as[String].replace("'", "")
-      //Convert boolean to string
-      var isEnabled: String = if (acct("isEnabled").as[Boolean])
-        "true"
-      else
-        "false"
-
-      val paraList: List[String] = List(acct("symbol").as[String], acct("exchange").as[String], name, acct("date").as[String], acct("type").as[String], acct("iexId").as[String], acct("region").as[String], acct("currency").as[String], isEnabled, "U")
-      //        testListst(paraList)
+      val paraList: List[String] = List(acct("symbol").as[String], 
+                                        acct("exchange").as[String], 
+                                        HelperClass.removeSingleQuote(acct("name").as[String]), 
+                                        acct("date").as[String], 
+                                        acct("type").as[String], 
+                                        acct("iexId").as[String], 
+                                        acct("region").as[String], 
+                                        acct("currency").as[String], 
+                                        HelperClass.StringifyBoolean(acct("isEnabled").as[Boolean]),
+                                        "U")
+     
       DataConnector.connectionClass_GenericSP("addupdatedeletesm", paraList)
-
     }
+    println("UpdateSecurityMaster: Function Completed")
   }
   def prt(str: String): Unit = {
     println(str) // Hello, James
