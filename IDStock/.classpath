@@ -3,6 +3,7 @@
 	<classpathentry exported="true" kind="con" path="org.scala-ide.sdt.launching.SCALA_CONTAINER"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry kind="src" path="src"/>
+<<<<<<< HEAD
 	<classpathentry kind="lib" path="E:/Users/Jun/Documents/GitHub/ScalaProject/Useful_Library/jackson-annotations-2.9.8.jar"/>
 	<classpathentry kind="lib" path="E:/Users/Jun/Documents/GitHub/ScalaProject/Useful_Library/jackson-core-2.9.8.jar"/>
 	<classpathentry kind="lib" path="E:/Users/Jun/Documents/GitHub/ScalaProject/Useful_Library/jackson-databind-2.9.8.jar"/>
@@ -12,6 +13,9 @@
 	<classpathentry kind="lib" path="E:/Users/Jun/Documents/GitHub/ScalaProject/Useful_Library/macro-compat_2.12-1.1.1.jar"/>
 	<classpathentry kind="lib" path="E:/Users/Jun/Documents/GitHub/ScalaProject/Useful_Library/play-functional_2.12-2.7.3.jar"/>
 	<classpathentry kind="lib" path="E:/Users/Jun/Documents/GitHub/ScalaProject/Useful_Library/play-json_2.12-2.7.3.jar"/>
+=======
+	<classpathentry kind="lib" path="E:/Users/Jun/Documents/GitHub/ScalaProject/Useful_Library/play-json_2.12-2.6.0-M5.jar"/>
+>>>>>>> 12f6724fa9c471583ed2056fba30cfae5305313e
 	<classpathentry kind="lib" path="E:/Users/Jun/Documents/GitHub/ScalaProject/Useful_Library/postgresql-42.2.5.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
