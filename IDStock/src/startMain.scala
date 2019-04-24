@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import play.api.libs.json._
-=======
-import scala.util
->>>>>>> 12f6724fa9c471583ed2056fba30cfae5305313e
 
 object startMain {
 
@@ -25,7 +21,7 @@ object startMain {
     }
 
   }
-  
+
   //Execute func as a Thread
   def ExecUpdateFunc(callback:() => Unit){
    new Thread(new Runnable{
@@ -34,7 +30,7 @@ object startMain {
         }
       }).start()
   }
-  
+
 
   def UpdateExchangeMaster() {
     var webstr = "https://cloud.iexapis.com/beta/ref-data/exchanges?token=YOUR_TOKEN_HERE"
@@ -42,22 +38,22 @@ object startMain {
     var returnTxt = get(webstr.replace("YOUR_TOKEN_HERE", token))
 
     println("UpdateExchangeMaster: Parsing Json to List")
-   
+
     val jsonList: List[JsValue] = Json.parse(returnTxt).as[List[JsValue]]
 
     println("UpdateExchangeMaster: Looping List")
     for (acct <- jsonList) {
-      val paraList: List[String] = List(acct("exchange").as[String], 
-                                        acct("region").as[String], 
-                                        acct("description").as[String], 
+      val paraList: List[String] = List(acct("exchange").as[String],
+                                        acct("region").as[String],
+                                        acct("description").as[String],
                                         "U")
-     
+
       DataConnector.connectionClass_GenericSP("addupdatedeleteem", paraList)
 
     }
     println("UpdateExchangeMaster: Function Completed")
   }
-  
+
   def UpdateSecurityMasterOTC() {
     println("UpdateSecurityMasterOTC: Getting Web Json")
     var webstr = "https://cloud.iexapis.com/beta/ref-data/otc/symbols?token=YOUR_TOKEN_HERE"
@@ -65,22 +61,22 @@ object startMain {
     var returnTxt = get(webstr.replace("YOUR_TOKEN_HERE", token))
 
     println("UpdateSecurityMasterOTC: Parsing Json to List")
-    
+
     val jsonList: List[JsValue] = Json.parse(returnTxt).as[List[JsValue]]
 
     println("UpdateSecurityMasterOTC: Looping List")
-    for (acct <- jsonList) {      
-      val paraList: List[String] = List(acct("symbol").as[String], 
-                                        acct("exchange").as[String], 
-                                        HelperClass.removeSingleQuote(acct("name").as[String]), 
-                                        acct("date").as[String], 
-                                        acct("type").as[String], 
-                                        acct("iexId").as[String], 
-                                        acct("region").as[String], 
-                                        acct("currency").as[String], 
-                                        HelperClass.StringifyBoolean(acct("isEnabled").as[Boolean]), 
+    for (acct <- jsonList) {
+      val paraList: List[String] = List(acct("symbol").as[String],
+                                        acct("exchange").as[String],
+                                        HelperClass.removeSingleQuote(acct("name").as[String]),
+                                        acct("date").as[String],
+                                        acct("type").as[String],
+                                        acct("iexId").as[String],
+                                        acct("region").as[String],
+                                        acct("currency").as[String],
+                                        HelperClass.StringifyBoolean(acct("isEnabled").as[Boolean]),
                                         "U")
-                                        
+
       DataConnector.connectionClass_GenericSP("addupdatedeletesm", paraList)
     }
     println("UpdateSecurityMasterOTC: Function Completed")
@@ -92,22 +88,22 @@ object startMain {
 
     var returnTxt = get(webstr.replace("YOUR_TOKEN_HERE", token))
 
-    println("UpdateSecurityMaster: Parsing Json to List")   
+    println("UpdateSecurityMaster: Parsing Json to List")
     val jsonList: List[JsValue] = Json.parse(returnTxt).as[List[JsValue]]
 
     println("UpdateSecurityMaster: Looping List")
     for (acct <- jsonList) {
-      val paraList: List[String] = List(acct("symbol").as[String], 
-                                        acct("exchange").as[String], 
-                                        HelperClass.removeSingleQuote(acct("name").as[String]), 
-                                        acct("date").as[String], 
-                                        acct("type").as[String], 
-                                        acct("iexId").as[String], 
-                                        acct("region").as[String], 
-                                        acct("currency").as[String], 
+      val paraList: List[String] = List(acct("symbol").as[String],
+                                        acct("exchange").as[String],
+                                        HelperClass.removeSingleQuote(acct("name").as[String]),
+                                        acct("date").as[String],
+                                        acct("type").as[String],
+                                        acct("iexId").as[String],
+                                        acct("region").as[String],
+                                        acct("currency").as[String],
                                         HelperClass.StringifyBoolean(acct("isEnabled").as[Boolean]),
                                         "U")
-     
+
       DataConnector.connectionClass_GenericSP("addupdatedeletesm", paraList)
     }
     println("UpdateSecurityMaster: Function Completed")
